@@ -1,16 +1,38 @@
 package dev.sandroisu.composetutorial
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import dev.sandroisu.composetutorial.ui.theme.ComposeTutorialTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,40 +41,91 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeTutorialTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    LoginScreen()
                 }
             }
         }
     }
 }
 
+@Preview(name = "Light Mode")
 @Composable
-fun Greeting(name: String = "world", modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun LoginScreen() {
+    var login by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ComposeTutorialTheme {
-        Greeting()
+    Column {
+        TextField(
+            value = login,
+            onValueChange = { newValue -> login = newValue },
+            placeholder = { Text(text = "e-mail") }
+        )
+        TextField(
+            value = password,
+            onValueChange = { newValue -> password = newValue },
+            placeholder = { Text(text = "password") }
+        )
+        Button(
+            onClick = {
+                Toast.makeText(context, "Works!", Toast.LENGTH_SHORT).show()
+            },
+            enabled = login.isNotEmpty() && password.isNotEmpty()
+        ) { Text(text = "Login") }
     }
 }
 
+
 @Composable
-fun MessageCard(name: String) {
-    Text(text = "Hello, $name!")
+fun MessageCard(message: Message) {
+    Row(modifier = Modifier.padding(all = 8.dp)) {
+        Image(
+            painter = painterResource(R.drawable.profile_picture),
+            contentDescription = "Nice lady",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Column {
+            Text(
+                text = message.author,
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Surface(shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp) {
+                Text(
+                    text = message.body,
+                    modifier = Modifier.padding(all = 4.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    name = "Dark Mode"
+)
 @Composable
-fun PreviewMessageCard(){
-    MessageCard("Android")
+fun PreviewMessageCard() {
+    ComposeTutorialTheme {
+        Surface {
+            MessageCard(
+                message = Message("Lexi", "Take a look at Jetpack Compose, it's great!")
+            )
+        }
+    }
 }
+
+data class Message(
+    val author: String,
+    val body: String,
+)
