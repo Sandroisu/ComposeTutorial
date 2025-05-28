@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -26,11 +30,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.sandroisu.composetutorial.ui.theme.ComposeTutorialTheme
@@ -54,13 +62,19 @@ class MainActivity : ComponentActivity() {
 fun LoginScreen() {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isFocused by remember { mutableStateOf(false) }
+    var rememberMe by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     Column {
         TextField(
+            modifier = Modifier.onFocusChanged {
+                isFocused = it.hasFocus
+            },
             value = login,
             onValueChange = { newValue -> login = newValue },
-            placeholder = { Text(text = "e-mail") }
+            placeholder = { Text(text = "e-mail") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
         TextField(
             value = password,
@@ -68,11 +82,33 @@ fun LoginScreen() {
             placeholder = { Text(text = "password") }
         )
         Button(
+            colors = if (isFocused) {
+                ButtonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.Black,
+                )
+            } else {
+                ButtonDefaults.buttonColors()
+            },
             onClick = {
-                Toast.makeText(context, "Works!", Toast.LENGTH_SHORT).show()
+                if (login.contains("@")) {
+                    Toast.makeText(context, "Works!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "“Invalid email!", Toast.LENGTH_SHORT).show()
+                }
             },
             enabled = login.isNotEmpty() && password.isNotEmpty()
         ) { Text(text = "Login") }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Row {
+            Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
+            Text(text = "Remember Me")
+        }
+
     }
 }
 
