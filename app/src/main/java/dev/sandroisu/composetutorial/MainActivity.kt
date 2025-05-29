@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.sandroisu.composetutorial.ui.theme.ComposeTutorialTheme
+import kotlinx.coroutines.delay
 import java.time.Clock
 import java.util.Date
 import java.util.TimeZone
@@ -82,6 +83,15 @@ fun LoginScreen() {
     val alphaAnimation = remember {
         Animatable(0f)
     }
+
+    var visible by remember {
+        mutableStateOf(false)
+    }
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (visible) 1.0f else 0f,
+        animationSpec =  tween(durationMillis = 2000, easing = LinearEasing),
+        label = "alpha"
+    )
     LaunchedEffect(Unit) {
         alphaAnimation.animateTo(
             targetValue = 1f,
@@ -90,6 +100,11 @@ fun LoginScreen() {
     }
     val context = LocalContext.current
 
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        visible = true
+    }
     LaunchedEffect(log) {
         Log.e("COMPOSE_TUTORIAL", log)
     }
@@ -97,7 +112,7 @@ fun LoginScreen() {
     Column(modifier = Modifier.padding(20.dp)) {
 
         Text(modifier = Modifier.graphicsLayer {
-            alpha = alphaAnimation.value
+            alpha = animatedAlpha
         }, text = "This is login screen")
 
         TextField(
