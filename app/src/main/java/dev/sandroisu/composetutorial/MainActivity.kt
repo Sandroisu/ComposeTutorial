@@ -29,7 +29,6 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -52,7 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.sandroisu.composetutorial.ui.theme.ComposeTutorialTheme
 import kotlinx.coroutines.delay
-import java.time.Clock
 import java.util.Date
 import java.util.TimeZone
 
@@ -80,26 +78,26 @@ fun LoginScreen() {
     var log by remember { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
     var rememberMe by rememberSaveable { mutableStateOf(false) }
-    val alphaAnimation = remember {
-        Animatable(0f)
-    }
+    val alphaAnimation =
+        remember {
+            Animatable(0f)
+        }
 
     var visible by remember {
         mutableStateOf(false)
     }
     val animatedAlpha by animateFloatAsState(
         targetValue = if (visible) 1.0f else 0f,
-        animationSpec =  tween(durationMillis = 2000, easing = LinearEasing),
-        label = "alpha"
+        animationSpec = tween(durationMillis = 2000, easing = LinearEasing),
+        label = "alpha",
     )
     LaunchedEffect(Unit) {
         alphaAnimation.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
         )
     }
     val context = LocalContext.current
-
 
     LaunchedEffect(Unit) {
         delay(100)
@@ -110,36 +108,41 @@ fun LoginScreen() {
     }
 
     Column(modifier = Modifier.padding(20.dp)) {
-
-        Text(modifier = Modifier.graphicsLayer {
-            alpha = animatedAlpha
-        }, text = "This is login screen")
+        Text(
+            modifier =
+                Modifier.graphicsLayer {
+                    alpha = animatedAlpha
+                },
+            text = "This is login screen",
+        )
 
         TextField(
-            modifier = Modifier.onFocusChanged {
-                isFocused = it.hasFocus
-            },
+            modifier =
+                Modifier.onFocusChanged {
+                    isFocused = it.hasFocus
+                },
             value = login,
             onValueChange = { newValue -> login = newValue },
             placeholder = { Text(text = "e-mail") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         )
         TextField(
             value = password,
             onValueChange = { newValue -> password = newValue },
-            placeholder = { Text(text = "password") }
+            placeholder = { Text(text = "password") },
         )
         Button(
-            colors = if (isFocused) {
-                ButtonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray,
-                    disabledContentColor = Color.Black,
-                )
-            } else {
-                ButtonDefaults.buttonColors()
-            },
+            colors =
+                if (isFocused) {
+                    ButtonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        disabledContentColor = Color.Black,
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                },
             onClick = {
                 if (login.contains("@")) {
                     Toast.makeText(context, "Works!", Toast.LENGTH_SHORT).show()
@@ -148,7 +151,7 @@ fun LoginScreen() {
                 }
                 log = "Login cliked ${Date().toInstant().atZone(TimeZone.getDefault().toZoneId())}"
             },
-            enabled = login.isNotEmpty() && password.isNotEmpty()
+            enabled = login.isNotEmpty() && password.isNotEmpty(),
         ) { Text(text = "Login") }
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -157,10 +160,8 @@ fun LoginScreen() {
             Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
             Text(text = "Remember Me")
         }
-
     }
 }
-
 
 @Composable
 fun MessageCard(message: Message) {
@@ -168,10 +169,11 @@ fun MessageCard(message: Message) {
         Image(
             painter = painterResource(R.drawable.profile_picture),
             contentDescription = "Nice lady",
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
         )
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -197,14 +199,14 @@ fun MessageCard(message: Message) {
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
-    name = "Dark Mode"
+    name = "Dark Mode",
 )
 @Composable
 fun PreviewMessageCard() {
     ComposeTutorialTheme {
         Surface {
             MessageCard(
-                message = Message("Lexi", "Take a look at Jetpack Compose, it's great!")
+                message = Message("Lexi", "Take a look at Jetpack Compose, it's great!"),
             )
         }
     }
